@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>合规商品示范市场 - 全栈测试</title>
+    <style>
+        body { font-family: sans-serif; background-color: #0b0b0c; color: #f3f4f6; padding: 40px 15px; margin: 0; }
+        .market-container { max-width: 1000px; margin: 0 auto; text-align: center; }
+        .header { margin-bottom: 40px; }
+        .grid { display: flex; gap: 30px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+        .card { background-color: #151518; border-radius: 12px; padding: 20px; width: 280px; border: 1px solid #2d2d34; text-align: left; }
+        .price { color: #ef4444; font-size: 20px; font-weight: bold; margin: 10px 0; }
+        .btn { background-color: #4f46e5; color: white; border: none; padding: 10px 15px; width: 100%; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn:hover { background-color: #4338ca; }
+    </style>
+</head>
+<body>
+<div class="market-container">
+    <div class="header">
+        <h1>Cloudflare Pages 全栈合规示范市场</h1>
+        <p style="color: #9ca3af;">本系统用于演示纯正的分布式边缘全栈（HTML + Functions + KV）交互逻辑</p>
+    </div>
+    <div class="grid">
+        <div class="card">
+            <h3>示例商品 A</h3>
+            <p style="color: #9ca3af; font-size: 13px;">高端定制研发测试样本，支持多语言分布式结算流程测试。</p>
+            <div class="price">22.00 USD</div>
+            <button class="btn" onclick="goToCheckout('商户A', '22.00')">立即订购</button>
+        </div>
+        <div class="card">
+            <h3>示例商品 B</h3>
+            <p style="color: #9ca3af; font-size: 13px;">高性能边缘存储对接验证样本，支持数据结构解耦测试。</p>
+            <div class="price">25.00 USD</div>
+            <button class="btn" onclick="goToCheckout('商户B', '25.00')">立即订购</button>
+        </div>
+    </div>
+</div>
+<script>
+    function goToCheckout(seller, price) {
+        // 安全参数传递，携带语种和渠道标记跳转至收银台
+        location.href = `/checkout.html?seller=${encodeURIComponent(seller)}&price=${encodeURIComponent(price)}&lang=CN`;
+    }
+</script>
+</body>
+</html>
