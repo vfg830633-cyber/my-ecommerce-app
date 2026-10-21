@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全球清算流水中央控制台</title>
+    <style>
+        body { font-family: sans-serif; background-color: #0b0b0c; color: #f3f4f6; padding: 40px 20px; margin: 0; }
+        .container { max-width: 1200px; margin: 0 auto; background: #151518; padding: 30px; border-radius: 12px; border: 1px solid #2d2d34; }
+        h2 { border-left: 4px solid #4f46e5; padding-left: 10px; color: #fff; margin-top:0; }
+        input[type="password"] { padding: 10px; background: #0b0b0c; color: white; border: 1px solid #2d2d34; border-radius: 6px; }
+        button { background: #4f46e5; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #4338ca; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; text-align: left; }
+        th, td { padding: 12px; border-bottom: 1px solid #2d2d34; }
+        th { background: #0b0b0c; color: #9ca3af; font-size: 12px; }
+        #msg-box { padding: 10px; border-radius: 6px; margin-top: 15px; display: none; font-size: 13px; }
+        .info { background: rgba(56,189,248,0.1); color: #38bdf8; border: 1px solid rgba(56,189,248,0.2); }
+        .error { background: rgba(220,38,38,0.1); color: #f87171; border: 1px solid rgba(220,38,38,0.2); }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>全球清算流水中央控制台</h2>
+    <div id="login-section">
+        <p style="color:#9ca3af; font-size:13px;">请输入系统高级验证密钥以安全提取分布式云存储流：</p>
+        <input type="password" id="pass" placeholder="访问口令..." value="admin_test_123">
+        <button onclick="loadRecords()">建立安全同步</button>
+    </div>
+    <div id="msg-box"></div>
+    <div id="dashboard" style="display:none; margin-top:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="color:#10b981; font-size:13px;">● 边缘云安全连接就绪 | 实时商业数据已完成去隐私审计</span>
+            <button onclick="loadRecords()">🔄 刷新数据</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>编号</th>
+                    <th>渠道</th>
+                    <th>时间 (北京)</th>
+                    <th>商户 / 金额</th>
+                    <th>结算模式</th>
+                    <th>买家备注</th>
+                    <th>状态</th>
+                </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+        </table>
+    </div>
+</div>
+<script>
+    async function loadRecords() {
+        const pass = document.getElementById('pass').value;
+        const msg = document.getElementById('msg-box');
+        const tbody = document.getElementById('tbody');
+        msg.style.display = "block";
+        msg.className = "info";
+        msg.textContent = "正在安全穿透 Cloudflare 边缘集群调取分布式云记录...";
+
+        try {
+            // 前端调用 /api/list 路由提取解耦数据
+            const res = await fetch('/api/list', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: pass })
+            });
+            const result = await res.json();
+            if (!res.ok) {
+                msg.className = "error";
+                msg.innerHTML = `连接失败：${result.message}`;
+                return;
+            }
+            msg.style.display = "none";
+            document.getElementById('login-section').style.display = "none";
+            document.getElementById('dashboard').style.display = "block";
+            tbody.innerHTML = '';
+            
+            if(!result.data || result.data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#6b7280; padding:40px;">⚠️ 云存储库完全空白。前台尚未录入测试数据。</td></tr>`;
+                return;
+            }
+            result.data.forEach((row, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${idx + 1}</td>
+                    <td><span style="background:#222; padding:3px 6px; border-radius:4px; font-size:12px;">${row.channel}</span></td>
+                    <td style="font-family:monospace; color:#9ca3af;">${row.time}</td>
+                    <td><b>${row.seller}</b> <br> <small style="color:#ef4444;">$${row.price}</small></td>
+                    <td><small style="color:#9ca3af;">${row.method}</small></td>
+                    <td>${row.name}</td>
+                    <td style="color:#10b981;">${row.status}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } catch(err) {
+            msg.className = "error";
+            msg.innerHTML = `阻断报错：未能与后端的 /api/list 路由成功握手。<br>💡 核心根因：请确保文件已经推送到 GitHub 且路径严格为：functions/api/list.js`;
+        }
+    }
+</script>
+</body>
+</html>
